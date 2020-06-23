@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:javascript="http://www.w3.org/1999/xhtml">
+<head>
+    <title>商品列表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/goods.css}"/>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<script>
+    $(function () {
+        $("#nav-placeholder").load("/top.html");
+    });
+</script>
+
+<div>
+    <div class="seckill_content">
+
+        <!--    <p th:text="'欢迎:'+ ${user.userName}"></p>-->
+        <div class="all_seckill_goods">
+            <div class="seckill_goods" th:each="goods,goodsStat : ${allGoods}">
+                <h4 th:text="${goods.goodsName}"></h4>
+                <img th:src="@{${goods.goodsImg}}" width="250"/>
+                <br/><br/>
+                <div class="seckill_price">
+                    <p th:text="${goods.goodsTitle}"></p>
+                    <p>
+                        <span class="price1" th:text="${goods.seckillPrice}+'元  '"></span>
+                        <del><span class="price2" th:text="${goods.goodsPrice}+'元'"></span></del>
+                    </p>
+                    <a th:href="'/goods_detail.htm?goodsId='+${goods.id}">
+                        <button class="btn btn-default" type="submit">进入详情页...</button>
+                    </a>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script>
+    // $(function () {
+    //     getUser();
+    // })
+
+    function getUser() {
+        $.ajax({
+            url: "/getUser",
+            type: "GET",
+            success: function (data) {
+                let user = data.data;
+                if (data.code == 0) {
+                    $("#username").text(user.userName);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+
+        })
+    }
+
+
+    function logout() {
+        $.ajax({
+            url: "/logout",
+            type: "GET",
+            success: function (data) {
+
+                if (data.code == 0) {
+                    window.location.href = "/";
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        })
+    }
+
+    function ajaxmethod() {
+        $.ajax({
+            url: "",
+            type: "GET",
+            success: function (data) {
+
+                if (data.code == 0) {
+
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        })
+    }
+
+
+</script>
+
+
+<script type="text/javascript" th:src="@{/jquery-validation/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:src="@{/jquery-validation/localization/messages_zh.min.js}"></script>
+<script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>我的地址</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<script>
+    $(function () {
+        $("#nav-placeholder").load("./top.html");
+    });
+</script>
+</body>
+<div class="form-group">
+    <button class="btn btn-success" onclick="addAddress()">添加地址</button>
+</div>
+<div class="form-group">
+    <table class="table table-hover">
+        <tr>
+            <th width="20%">联系人电话</th>
+            <th width="60%">地址</th>
+            <th width="20%">操作</th>
+        </tr>
+        <tbody id="tbody-result">
+        </tbody>
+
+    </table>
+</div>
+<script>
+    $(function () {
+        getUserAddress();
+    })
+
+    function getUserAddress() {
+        var tbody = window.document.getElementById("tbody-result");
+        $.ajax({
+            url: "/allAddress",
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    var str = "";
+                    var data = data.data;
+                    if (data.length == 0) {
+                        layer.msg("你还没有添加地址，快去添加地址吧");
+                        return;
+                    }
+                    for (i in data) {
+                        str += "<tr id=tr" + data[i].id + ">" +
+                            "<td id=td_telephone" + data[i].id + ">" + data[i].telephone + "</td>" +
+                            "<td id=td_address" + data[i].id + ">" + data[i].address + "</td>" +
+                            "<td>" +
+                            "<button class='btn btn-danger' onclick='deleteAddress(" + data[i].id + ")'>删除</button>" +
+                            "<button class='btn btn-primary' onclick='updateAddress(" + data[i].id + ")'>修改</button>" +
+                            // "<input type=hidden id=hidden" + data[i].id + " value=" + data[i].id + ">"
+                            "</td></tr>";
+                    }
+                    tbody.innerHTML = str;
+                }
+            }
+            ,
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+
+        })
+    }
+
+    function addAddress() {
+        window.location.href = "/add_address_page.html";
+    }
+
+    function deleteAddress(id) {
+        $.ajax({
+            url: "/deleteAddress",
+            type: "GET",
+            data: {
+                id: id,
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    layer.msg("删除成功");
+                    $("#tr" + id).remove();
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function (data) {
+                layer.msg("客户端请求有误");
+            }
+        })
+    }
+
+    function updateAddress(id) {
+        let telephone = $("#td_telephone" + id).text();
+        let address = $("#td_address" + id).text();
+        // console.log(telephone);
+        // console.log(address);
+        window.location.href = "/update_address_page.html?telephone=" + telephone + "&address=" + address + "&id=" + id;
+    }
+
+</script>
+</html>

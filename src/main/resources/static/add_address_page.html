@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.form.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <title>添加地址</title>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<script>
+    $(function () {
+        $("#nav-placeholder").load("./top.html");
+    });
+</script>
+
+<div>
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="telephone" class="col-sm-1 control-label">联系电话</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="telephone" placeholder="联系电话">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="address" class="col-sm-1 control-label">住址</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="address" placeholder="住址">
+            </div>
+        </div>
+        <button class="btn btn-primary col-sm-offset-1" type="button" onclick="doAddAddress()">确认添加</button>
+
+    </form>
+</div>
+</body>
+<script>
+    function doAddAddress() {
+        let telephone = $("#telephone").val();
+        let address = $("#address").val();
+        console.log(telephone);
+        console.log(address);
+        $.ajax({
+            url: "/addAddress",
+            type: "POST",
+            data: {
+                telephone: telephone,
+                address: address,
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    window.location.href="/my_address.html";
+                    layer.msg("地址添加成功!");
+                } else {
+                    layer.msg(data.msg);
+                }
+            }
+            ,
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        })
+    }
+</script>
+</html>

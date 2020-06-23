@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改用户信息</title>
+
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery.form.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+<script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+<script type="text/javascript" src="/layer/layer.js"></script>
+<script type="text/javascript" src="/js/md5.min.js"></script>
+<script type="text/javascript" src="/js/common.js"></script>
+
+<body>
+<div id="nav-placeholder"></div>
+<script>
+    $(function () {
+        $("#nav-placeholder").load("./top.html");
+    });
+</script>
+<div>
+    <form class="form-horizontal" id="form1" method="post" enctype="multipart/form-data" action="/user/update/image">
+        <div class="form-group">
+            <label for="user" class="col-sm-1 control-label">用户名</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="user" placeholder="用户名">
+            </div>
+            <button class="btn btn-primary col-sm-offset-1" type="button" onclick="doUpdateUser()">确认修改</button>
+
+        </div>
+        <div class="form-group">
+            <label for="file" class="col-sm-1 control-label">头像</label>
+            <input type="file" id="file" name="file" class="col-sm-2">
+            <button class="btn btn-primary col-sm-offset-2" type="submit">确认修改</button>
+
+        </div>
+        <div class="form-group">
+            <label for="phone" class="col-sm-1 control-label">电话</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="phone" placeholder="电话" disabled="disabled">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="registerDate" class="col-sm-1 control-label">注册时间</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="registerDate" placeholder="注册时间" disabled="disabled">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="lastLoginDate" class="col-sm-1 control-label">最后登录</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="lastLoginDate" placeholder="最后登录" disabled="disabled">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="loginCount" class="col-sm-1 control-label">登录次数</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="loginCount" placeholder="登录次数" disabled="disabled">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+
+<script>
+    $(function () {
+        getUser2();
+    })
+
+    function getUser2() {
+        $.ajax({
+            url: "/getUser2",
+            type: "GET",
+            success: function (data) {
+                let user = data.data;
+                if (data.code == 0) {
+                    console.log(user.userName);
+                    var registerDate = user.registerDate;
+                    var lastLoginDate = user.lastLoginDate;
+                    $("#user").val(user.userName);
+                    $("#phone").val(user.phone);
+                    $("#registerDate").val(registerDate);
+                    $("#lastLoginDate").val(lastLoginDate);
+                    $("#loginCount").val(user.loginCount);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        })
+    }
+
+    function doUpdateUser() {
+        let username = $("#user").val();
+        console.log(username);
+        $.ajax({
+            url: "/user/update/username",
+            type: "POST",
+            data: {
+                userName: username,
+            },
+            success: function (data) {
+                let user = data.data;
+                if (data.code == 0) {
+                    layer.msg("用户名修改成功");
+                    updateUserName(data.data);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        })
+    }
+
+
+    $(function () {
+        $("#form1").ajaxForm(function (data) {
+            console.log(data);
+            if (data.code == 0) {
+                layer.msg("头像修改成功");
+                updateUserImage(data.data);
+            } else {
+                layer.msg(data.msg);
+            }
+        });
+    });
+
+    function updateUserImage(path) {
+        console.log(path);
+        $("#img1").attr("src", path);
+    }
+
+    function updateUserName(data) {
+        $("#username").text(data);
+    }
+
+    $(function () {
+        getUser();
+    })
+
+    function getUser() {
+        $.ajax({
+            url: "/getUser",
+            type: "GET",
+            success: function (data) {
+                let user = data.data;
+                if (data.code == 0) {
+                    $("#username").text(user.userName);
+                    $("#img1").attr("src", user.head);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+
+        })
+    }
+
+
+    function dateFormat(fmt, date) //时间格式化
+    {
+        var ret;
+        var opt =
+            {
+                "y+": date.getFullYear().toString(),        // 年
+                "M+": (date.getMonth() + 1).toString(),     // 月
+                "d+": date.getDate().toString(),            // 日
+                "H+": date.getHours().toString(),           // 时
+                "m+": date.getMinutes().toString(),         // 分
+                "s+": date.getSeconds().toString()          // 秒
+                // 有其他格式化字符需求可以继续添加，必须转化成字符串
+            };
+        for (var k in opt) {
+            ret = new RegExp("(" + k + ")").exec(fmt);
+            if (ret) {
+                fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+            }
+            ;
+        }
+        ;
+        return fmt;
+    }
+</script>
+</html>

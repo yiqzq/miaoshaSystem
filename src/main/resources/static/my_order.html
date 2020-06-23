@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单</title>
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery.form.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+<script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+<script type="text/javascript" src="/layer/layer.js"></script>
+<script type="text/javascript" src="/js/md5.min.js"></script>
+<script type="text/javascript" src="/js/common.js"></script>
+<body>
+<div id="nav-placeholder"></div>
+<script>
+    $(function () {
+        $("#nav-placeholder").load("./top.html");
+    });
+</script>
+
+<table class="table table-hover">
+    <tr>
+        <th>订单编号</th>
+        <th>商品名称</th>
+        <th>购买数量</th>
+        <th>购买价格</th>
+        <th>状态</th>
+        <th>详情</th>
+    </tr>
+    <tbody id="tbody-result">
+    </tbody>
+
+</table>
+
+</body>
+<!--0 未支付-->
+<!--1 已支付-->
+<!--2 已发货-->
+
+<script>
+    $(function () {
+        getUserOrderInfo();
+    })
+
+    function getUserOrderInfo() {
+        var tbody = window.document.getElementById("tbody-result");
+        $.ajax({
+            url: "/allOrderInfo",
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    var str = "";
+                    var data = data.data;
+                    if (data.length == 0) {
+                        layer.msg("你还没有订单，快去购物吧");
+                        return;
+                    }
+                    for (i in data) {
+                        var sts = data[i].status;
+                        var tmp = "";
+                        if (sts == 0) tmp = "未支付";
+                        else if (sts == 1) tmp = "待发货";
+                        else if (sts == 2) tmp = "已发货";
+                        str += "<tr>" +
+                            "<td>" + data[i].id + "</td>" +
+                            "<td>" + data[i].goodsName + "</td>" +
+                            "<td>" + data[i].goodsCount + "</td>" +
+                            "<td>" + data[i].goodsPrice + "</td>" +
+                            "<td>" + tmp + "</td>" +
+                            "<td><a href=/order_detail.htm?orderId=" + data[i].id + "><button class='btn btn-default'>点击查看详情</button></a></td>" +
+                            "</tr>";
+                    }
+                    tbody.innerHTML = str;
+                }
+            }
+            ,
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+
+        })
+    }
+</script>
+</html>

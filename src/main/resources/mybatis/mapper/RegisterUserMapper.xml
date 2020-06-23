@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yiqzq.miaoshasystem.dao.RegisterUserMapper">
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+    insert into user(user_name,phone,password,salt,head,login_count,register_date,last_login_date)
+     values(#{userName},#{phone},#{password},#{salt},#{head},#{loginCount},#{registerDate},#{lastLoginDate})
+    </insert>
+
+</mapper>

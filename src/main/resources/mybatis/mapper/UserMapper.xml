@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yiqzq.miaoshasystem.dao.UserMapper">
+    <update id="updateUserImage" parameterType="com.yiqzq.miaoshasystem.pojo.User">
+        update user set head=#{head}  where id=#{id}
+    </update>
+    <update id="updateUserUserName" parameterType="com.yiqzq.miaoshasystem.pojo.User">
+        update user set user_name=#{userName} where id=#{id}
+    </update>
+    <update id="updateUserLoginTimeAndCount" parameterType="com.yiqzq.miaoshasystem.pojo.User">
+        update user set login_count=#{loginCount},last_login_date=#{lastLoginDate} where id=#{id}
+    </update>
+    <update id="updateUserPassword" parameterType="com.yiqzq.miaoshasystem.pojo.User">
+         update user set password=#{password} where id=#{id}
+    </update>
+
+    <select id="getAllAddressByUserId" resultType="com.yiqzq.miaoshasystem.pojo.Address">
+        select id,user_id,telephone,address from address where user_id=#{userId};
+    </select>
+
+    <insert id="addAddress">
+        insert into address(user_id,telephone,address) values (#{userId},#{telephone},#{address})
+    </insert>
+    <delete id="deleteAddress">
+        delete from address where id=#{id}
+    </delete>
+    <update id="updateAddress">
+        update address set telephone=#{telephone},address=#{address} where id=#{id};
+    </update>
+</mapper>

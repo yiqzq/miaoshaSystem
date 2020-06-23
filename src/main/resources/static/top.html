@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/goods/list">秒杀商品列表</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="/my_order.html">我的订单</a></li>
+        </ul>
+        <ul class="nav navbar-nav">
+            <li><a href="/my_address.html">我的地址</a></li>
+        </ul>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="navbar-right">
+                <img id="img1" class="img-circle" width="40" height="40">
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown"
+                       id="username"
+                       role="button" aria-expanded="false">
+                    </a>
+
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/update_user.html">个人中心</a></li>
+                        <li><a href="/update_user_password.html">修改密码</a></li>
+                        <li><a href="javascript:void(0);" onclick="logout()">退出登陆</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+<script>
+    $(function () {
+        getUser();
+    })
+
+    function getUser() {
+        $.ajax({
+            url: "/getUser",
+            type: "GET",
+            success: function (data) {
+                let user = data.data;
+                if (data.code == 0) {
+                    $("#username").text(user.userName);
+                    $("#img1").attr("src", user.head);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+
+        })
+    }
+
+
+    function logout() {
+        $.ajax({
+            url: "/logout",
+            type: "GET",
+            success: function (data) {
+
+                if (data.code == 0) {
+                    window.location.href = "/";
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        })
+    }
+</script>
+</html>

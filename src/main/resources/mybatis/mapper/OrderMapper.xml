@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yiqzq.miaoshasystem.dao.OrderMapper">
+    <resultMap id="BaseResultSeckillOrderMap" type="com.yiqzq.miaoshasystem.pojo.SeckillOrder">
+        <constructor>
+            <idArg column="id" jdbcType="BIGINT" javaType="java.lang.Integer"/>
+            <arg column="user_id" jdbcType="BIGINT" javaType="java.lang.Integer"/>
+            <arg column="order_id" jdbcType="BIGINT" javaType="java.lang.Integer"/>
+            <arg column="goods_id" jdbcType="BIGINT" javaType="java.lang.Integer"/>
+        </constructor>
+    </resultMap>
+    <resultMap id="BaseResultSeckillOrderAndGoodsMap" type="com.yiqzq.miaoshasystem.pojo.SeckillGoods">
+        <constructor>
+            <arg column="seckil_price" jdbcType="DECIMAL" javaType="java.lang.Double"/>
+            <arg column="stock_count" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="start_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="end_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="id" jdbcType="BIGINT" javaType="java.lang.Integer"/>
+            <arg column="goods_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="goods_title" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="goods_img" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="goods_price" jdbcType="DECIMAL" javaType="java.lang.Double"/>
+            <arg column="goods_stock" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="create_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="update_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="goods_detail" jdbcType="LONGVARCHAR" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_Seckill_List">
+    sg.seckil_price , sg.stock_count , sg.start_date , sg.end_date
+  </sql>
+    <sql id="Base_Column_List">
+    goods.id, goods.goods_name, goods.goods_title, goods.goods_img, goods.goods_price,
+    goods.goods_stock, goods.create_date, goods.update_date
+  </sql>
+    <sql id="Blob_Column_List">
+    goods.goods_detail
+  </sql>
+
+    <sql id="SeckillOrder_List">
+    id, user_id, order_id, goods_id
+  </sql>
+
+    <!--    以上方便下面的操作-->
+
+    <select id="getSeckillOrderByUserIdAndGoodsId" resultMap="BaseResultSeckillOrderMap" parameterType="map">
+        select
+        <include refid="SeckillOrder_List"/>
+        from seckill_order
+        where user_id = #{userId,jdbcType=BIGINT}
+        and goods_id = #{goodsId,jdbcType=BIGINT}
+    </select>
+
+    <insert id="insert" parameterType="com.yiqzq.miaoshasystem.pojo.SeckillOrder">
+    insert into seckill_order (id, user_id, order_id, goods_id)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT},
+      #{goodsId,jdbcType=BIGINT})
+  </insert>
+
+    <insert id="addOrder" parameterType="com.yiqzq.miaoshasystem.pojo.OrderInfo"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into order_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="goodsId != null">
+                goods_id,
+            </if>
+            <if test="addrId != null">
+                addr_id,
+            </if>
+            <if test="goodsName != null">
+                goods_name,
+            </if>
+            <if test="goodsImg != null">
+                goods_img,
+            </if>
+            <if test="goodsCount != null">
+                goods_count,
+            </if>
+            <if test="goodsPrice != null">
+                goods_price,
+            </if>
+            <if test="orderChannel != null">
+                order_channel,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="payDate != null">
+                pay_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsId != null">
+                #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="addrId != null">
+                #{addrId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsName != null">
+                #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsImg != null">
+                #{goodsImg,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsCount != null">
+                #{goodsCount,jdbcType=INTEGER},
+            </if>
+            <if test="goodsPrice != null">
+                #{goodsPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="orderChannel != null">
+                #{orderChannel,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="payDate != null">
+                #{payDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+
+    <insert id="addSeckillOrder" parameterType="com.yiqzq.miaoshasystem.pojo.SeckillOrder">
+        insert into seckill_order(user_id,order_id,goods_id) values (#{userId},#{orderId},#{goodsId})
+    </insert>
+
+    <select id="getOrderInfoByOrderId" resultType="com.yiqzq.miaoshasystem.pojo.OrderInfo">
+        select id,user_id,goods_id,addr_id,goods_name,goods_img,goods_count,goods_price,order_channel,status,create_date,pay_date
+        from order_info where id=#{id}
+    </select>
+
+    <select id="getOrderInfoBySeckillOrderId" resultType="com.yiqzq.miaoshasystem.pojo.OrderInfo">
+     select id,user_id,goods_id,addr_id,goods_name,goods_img,goods_count,goods_price,order_channel,status,create_date,pay_date
+        from order_info  where id=#{id}
+    </select>
+
+    <select id="getAllOrderByUserId" resultType="com.yiqzq.miaoshasystem.pojo.OrderInfo">
+          select id,user_id,goods_id,addr_id,goods_name,goods_img,goods_count,goods_price,order_channel,status,create_date,pay_date
+        from order_info  where user_id=#{userId}
+    </select>
+
+    <update id="payOrder">
+        update order_info set status=1 where id=#{orderId}
+    </update>
+    <update id="setAddress">
+         update order_info set addr_id=#{addressId} where id=#{orderId}
+    </update>
+</mapper>

@@ -1,0 +1,219 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>订单详情</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/detail.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<script>
+    $(function () {
+        $("#nav-placeholder").load("./top.html");
+    });
+</script>
+<div class="top">
+    <h4 style="text-align: center">订单详情页</h4>
+</div>
+
+
+<div class="goods">
+    <div class="containers">
+        <div class="goods_view">
+            <img id="goodsImg" width="560"/>
+        </div>
+        <div class="goods_info">
+            <h2 id="goodsName"></h2>
+            <!--            商品详情-->
+            <p class="title"></p>
+            <p>
+                <span class="price1" id="orderPrice"></span>
+            </p>
+            <div class="seckill_data">
+                <div>
+                    <span>下单时间</span>
+                    <p id="createDate"></p>
+                </div>
+                <div>
+                    <span>订单状态</span>
+                    <p id="orderStatus"></p>
+                </div>
+            </div>
+            <div class="count">
+                <span>收货人：</span>
+                <span id="telephone">无</span>
+            </div>
+            <div class="count">
+                <span>收货地址：</span>
+                <span id="address">无</span>
+            </div>
+            <button class="btn btn-primary btn-block" type="button" id="updateButton" onclick="chooseAddress()">修改地址
+            </button>
+            <button class="btn btn-primary btn-block" type="submit" id="payButton" onclick="pay()">立即支付</button>
+            <input type="hidden" id="addressId" value="">
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+
+
+    function getAllAddress() {
+        $.ajax({
+            url: "/allAddress",
+            type: "GET",
+            success: function (data) {
+                if (data.code == 0) {
+                    var allAddress = data.data;
+                    if (allAddress.length == 0) {
+                        window.location.href = "/my_address.html";
+                    }
+                    var firstAddress = allAddress[0];
+                    $("#telephone").text(firstAddress.telephone);
+                    $("#address").text(firstAddress.address);
+                    $("#addressId").val(firstAddress.id);
+
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        })
+    }
+
+    function chooseAddress() {
+        var orderId = g_getQueryString("orderId");
+        window.location.href = "/choose_address.html?orderId=" + orderId;
+    }
+
+
+    function render(order) {
+        $("#goodsName").text(order.goodsName);
+        $("#goodsImg").attr("src", order.goodsImg);
+        $("#orderPrice").text(order.goodsPrice);
+        $("#createDate").text(new Date(order.createDate).format("yyyy-MM-dd hh:mm:ss"));
+        var status = "";
+        if (order.status == 0) {
+            status = "未支付"
+        } else if (order.status == 1) {
+            status = "待发货";
+            $.ajax({
+                url: "/getAddress",
+                type: "GET",
+                data: {
+                    addressId: order.addrId,
+                },
+                success: function (data) {
+                    // console.log("/getAddress");
+                    // console.log(data);
+                    if (data.code == 0) {
+                        data = data.data;
+                        $("#telephone").text(data.telephone);
+                        $("#address").text(data.address);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                },
+                error: function (data) {
+                    layer.msg("客户端请求有误!");
+                }
+            })
+
+            $("#telephone").text("待发货");
+            $("#address").text("待发货");
+            $("#updateButton").hide();
+            $("#payButton").hide();
+
+        } else if (order.status == 2) {
+            status = "已发货";
+        }
+        $("#orderStatus").text(status);
+
+
+    }
+
+    $(function () {
+        var telephone = getQueryString("telephone");
+        var address = getQueryString("address");
+        var addr_id = getQueryString("id");
+        if (telephone != null) {
+            $("#telephone").text(telephone);
+            $("#address").text(address);
+            $("#addressId").val(addr_id);
+        } else {
+            getAllAddress();
+        }
+        getOrderDetail();
+    })
+
+    function getOrderDetail() {
+        var orderId = g_getQueryString("orderId");
+        console.log(orderId);
+        $.ajax({
+            url: "/order/detail",
+            type: "GET",
+            data: {
+                orderId: orderId
+            },
+            success: function (data) {
+
+                if (data.code == 0) {
+                    render(data.data);
+                } else if (data.code == 100014) {
+                    layer.msg(data.msg);
+                    window.location.href = "/";
+                } else {
+                    layer.msg(data.msg);
+                }
+
+            },
+            error: function () {
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+
+
+    function pay() {
+        var orderId = getQueryString("orderId");
+        $.ajax({
+            url: "/pay",
+            type: "POST",
+            data: {
+                addrId: $("#addressId").val(),
+                orderId: orderId,
+            },
+            success: function (data) {
+                console.log("success:" + data);
+                if (data.code == 0) {
+                    layer.msg("支付成功!");
+                    getOrderDetail();
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+                layer.msg("客户端请求有误");
+            }
+        });
+    }
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return decodeURI(r[2]);
+        return null;
+    }
+</script>
