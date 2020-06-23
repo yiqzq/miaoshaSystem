@@ -43,7 +43,8 @@ public Result<User> insertUser(RegisterUser registerUser) {
     }
 ```
 
-3. 项目效果可以查看http://139.9.128.222:8080/，有效期至2020/11/1
+3. 项目效果可以查看http://139.9.128.222:8080/
+4. 有效期至2020/11/1
 
 <img src="https://i.loli.net/2020/06/23/IeW598TCvcwfFmy.png" alt="image-20200623155314100" style="zoom:80%;" />
 
