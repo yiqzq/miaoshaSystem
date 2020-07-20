@@ -6,7 +6,6 @@ package com.yiqzq.miaoshasystem.utils;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -721,7 +720,6 @@ public class RedisUtil {
             return JSON.toJavaObject(JSON.parseObject(str), clazz);
         }
     }
-
 
 
 }
