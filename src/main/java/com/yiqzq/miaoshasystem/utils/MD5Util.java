@@ -2,7 +2,6 @@ package com.yiqzq.miaoshasystem.utils;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
-import sun.rmi.runtime.Log;
 
 /**
  * @author yiqzq
@@ -10,9 +9,7 @@ import sun.rmi.runtime.Log;
  */
 @Component
 public class MD5Util {
-
     private static final String SALT = "yiqzq456";
-
     public static String md5(String password) {
         return DigestUtils.md5DigestAsHex(password.getBytes());
     }

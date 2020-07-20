@@ -6,6 +6,7 @@ package com.yiqzq.miaoshasystem.utils;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,17 +20,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
 /**
- *
  * 规范一下Redis的key的命名
  * 数据类型:数据值
  * 多个用-分割
- * */
+ */
 @Component
 
 public class RedisUtil {
 
     private static RedisTemplate redisTemplate;
+
     @SuppressWarnings("unchecked")
     @Autowired // 注入行参RedisTemplate
     public void setRedisTemplate(RedisTemplate redisTemplate) {
@@ -186,7 +188,7 @@ public class RedisUtil {
     /**
      * 判断key是否存在
      *
-     * @param key   键
+     * @param key 键
      * @return
      */
     public static Boolean exist(String key) {
@@ -704,18 +706,22 @@ public class RedisUtil {
             return JSON.toJSONString(value);
         }
     }
+
     public static <T> T stringToBean(String str, Class<T> clazz) {
-        if(str == null || str.length() <= 0 || clazz == null) {
+        if (str == null || str.length() <= 0 || clazz == null) {
             return null;
         }
-        if(clazz == int.class || clazz == Integer.class) {
-            return (T)Integer.valueOf(str);
-        }else if(clazz == String.class) {
-            return (T)str;
-        }else if(clazz == long.class || clazz == Long.class) {
-            return  (T)Long.valueOf(str);
-        }else {
+        if (clazz == int.class || clazz == Integer.class) {
+            return (T) Integer.valueOf(str);
+        } else if (clazz == String.class) {
+            return (T) str;
+        } else if (clazz == long.class || clazz == Long.class) {
+            return (T) Long.valueOf(str);
+        } else {
             return JSON.toJavaObject(JSON.parseObject(str), clazz);
         }
     }
+
+
+
 }

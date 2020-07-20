@@ -7,6 +7,7 @@ import com.yiqzq.miaoshasystem.service.SeckillGoodsService;
 import com.yiqzq.miaoshasystem.service.SeckillOrderService;
 import com.yiqzq.miaoshasystem.utils.MD5Util;
 import com.yiqzq.miaoshasystem.utils.RedisUtil;
+import io.rebloom.client.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,6 +83,8 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
             //同时存入Redis消息,防止重复秒杀
             RedisUtil.set("seckillorderuidgid:" + user.getId() + "-" + goods.getId(), seckillOrder);
             RedisUtil.delete("userId:" + user.getId() + "-allOrder");
+            Client client = new Client("139.9.128.222", 6379);
+            client.add("result", "" + user.getId() + "-" + goods.getId());
             return orderInfo;
         } else {
             setGoodsOver(goods.getId());
@@ -91,6 +94,7 @@ public class SeckillOrderServiceImpl implements SeckillOrderService {
 
     @Override
     public int getSeckillResult(int userId, Integer goodsId) {
+
         SeckillOrder order = orderMapper.getSeckillOrderByUserIdAndGoodsId(userId, goodsId);
         log.info("SeckillOrder:" + order);
         if (order != null) {

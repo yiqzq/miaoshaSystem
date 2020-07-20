@@ -12,6 +12,7 @@ import com.yiqzq.miaoshasystem.service.SeckillGoodsService;
 import com.yiqzq.miaoshasystem.service.SeckillOrderService;
 import com.yiqzq.miaoshasystem.utils.CookieUtil;
 import com.yiqzq.miaoshasystem.utils.RedisUtil;
+import io.rebloom.client.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +102,8 @@ public class SeckillGoodsController implements InitializingBean {
             log.info("goodsId:" + goodsId + "over");
             throw new MyException(CodeMsg.SECKILL_OVER);
         }
+
+
         //预减库存
         long stock = RedisUtil.decr("goodsId:" + goodsId + "-stock", 1);
         log.info("stock2:" + stock);
@@ -114,6 +117,7 @@ public class SeckillGoodsController implements InitializingBean {
         if (order != null) {
             return Result.error(CodeMsg.REPEATE_MIAOSHA);
         }
+
         //入队
         MessageInSeckillqueue message = new MessageInSeckillqueue();
         message.setUser(user);
@@ -145,8 +149,12 @@ public class SeckillGoodsController implements InitializingBean {
         if (user == null) {
             throw new MyException(CodeMsg.USER_NO_LOGIN);
         }
-        Integer result = seckillOrderService.getSeckillResult(user.getId(), goodsId);
-        return Result.success(result);
+        Client client = new Client("139.9.128.222", 6379);
+        boolean result = client.exists("result", "" + user.getId() + "-" + goodsId);
+        log.info("" + user.getId() + "-" + goodsId + "-" + result);
+        if (!result) return Result.success(0);
+        Integer answer = seckillOrderService.getSeckillResult(user.getId(), goodsId);
+        return Result.success(answer);
     }
 /**
  receive:{"goodsId":1,"user":{"id":1,"loginCount":1,"password":"","phone":"18305065625","salt":"sdfsfs","userName":"admin"}}

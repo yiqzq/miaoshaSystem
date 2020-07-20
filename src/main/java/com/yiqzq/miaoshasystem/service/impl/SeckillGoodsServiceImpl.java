@@ -50,7 +50,7 @@ public class SeckillGoodsServiceImpl implements SeckillGoodsService {
     public void validateTime(Integer goodsId, Date nowDate) {
         Date goodsDate = (Date) RedisUtil.get("goodsId:" + goodsId + "-startDate");
         if (nowDate.before(goodsDate)) {
-             throw new MyException(CodeMsg.GOODS_TIME_NOT_REACH);
+            throw new MyException(CodeMsg.GOODS_TIME_NOT_REACH);
         }
     }
 }

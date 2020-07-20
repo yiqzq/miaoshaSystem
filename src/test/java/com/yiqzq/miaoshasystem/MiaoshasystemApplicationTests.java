@@ -12,10 +12,13 @@ import org.apache.ibatis.session.SqlSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Date;
 import java.util.List;
+
+import io.rebloom.client.Client;
 
 @SpringBootTest
 class MiaoshasystemApplicationTests {
@@ -29,11 +32,14 @@ class MiaoshasystemApplicationTests {
     GoodsMapper goodsMapper;
     @Autowired
     UserMapper userMapper;
-
+    @Autowired
+    RedisUtil redisUtil;
     @Autowired
     OrderMapper orderMapper;
     @Autowired
     MQSender mqSender;
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @Test
     void testuuid() {
@@ -123,7 +129,6 @@ class MiaoshasystemApplicationTests {
     }
 
 
-
     @Test
     void testupdateUser() {
         User user = new User();
@@ -163,13 +168,20 @@ class MiaoshasystemApplicationTests {
         userMapper.updateAddress(25, "18305065625", "清华");
     }
 
- @Test
-    void testpayOrder() {
-      orderMapper.payOrder(467);
-    }
     @Test
-    void testsetAddress() {
-      orderMapper.setAddress(467,27);
+    void testpayOrder() {
+        orderMapper.payOrder(467);
     }
 
+    @Test
+    void testsetAddress() {
+        orderMapper.setAddress(467, 27);
+    }
+
+    @Test
+    void testredis() throws InterruptedException {
+        Client client = new Client("139.9.128.222", 6379);
+        boolean result = client.exists("result", "1-1");
+        System.out.println(result);
+    }
 }
